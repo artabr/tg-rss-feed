@@ -1,5 +1,5 @@
 import express from 'express';
-import TelegramBotClient from './telegram-client';
+import TelegramProcessManager from './telegram-process-manager';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -9,13 +9,13 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 const app = express();
 
-// Initialize Telegram client
-const telegramClient = TelegramBotClient.getInstance();
+// Initialize Telegram process manager
+const telegramManager = TelegramProcessManager.getInstance();
 
 // Connect to Telegram before starting the server
 const startServer = async () => {
     try {
-        await telegramClient.connect();
+        await telegramManager.connect();
         
         app.get('/', async (req, res) => {
             try {
@@ -24,8 +24,7 @@ const startServer = async () => {
                     return res.status(400).json({ error: 'Channel username is required' });
                 }
                 
-                const limit = req.query.limit ? Number(req.query.limit) : 10;
-                const messages = await telegramClient.getMessagesFromChannel(channelUsername, limit);
+                const messages = await telegramManager.getMessagesFromChannel(channelUsername);
                 res.json({ messages });
             } catch (error) {
                 console.error('Error fetching messages:', error);
@@ -46,7 +45,7 @@ const startServer = async () => {
                     return res.status(400).json({ error: 'Invalid message ID' });
                 }
 
-                const message = await telegramClient.getMessageById(channelUsername, messageId);
+                const message = await telegramManager.getMessageById(channelUsername, messageId);
                 if (!message) {
                     return res.status(404).json({ error: 'Message not found' });
                 }
