@@ -2,7 +2,7 @@ import { Api, TelegramClient } from 'telegram';
 import { StringSession } from 'telegram/sessions';
 import NodeCache from 'node-cache';
 
-interface TelegramMessage {
+export interface TelegramMessage {
     message: string;
     [key: string]: any;
 }
@@ -60,20 +60,27 @@ class TelegramBotClient {
 
     public async getMessagesFromChannel(channelUsername: string) {
         try {
+            console.log(`Attempting to fetch messages for channel: ${channelUsername}`);
             const channel = await this.client.getEntity(channelUsername);
+            console.log('Successfully got channel entity:', channel);
+            
             const cacheKey = `${this.MESSAGES_CACHE_KEY}_${channelUsername}`;
             const lastMessageIdKey = `${this.LAST_MESSAGE_ID_KEY}_${channelUsername}`;
             
             // Get cached messages if they exist
             let messages = this.cache.get(cacheKey) as TelegramMessage[] || [];
-            let lastProcessedId = this.cache.get(lastMessageIdKey) as number || 0;
+            let lastProcessedId = this.cache.get(lastMessageIdKey) as number || 1;
+            
+            console.log(`Starting message fetch from ID: ${lastProcessedId + 1}`);
             
             // Start from the next message after the last processed one
             let currentId = lastProcessedId + 1;
             const maxId = 1000000;
+            let emptyMessageCount = 0;  // Counter for consecutive empty messages
 
             while (currentId <= maxId) {
                 try {
+                    console.log(`Fetching message ID: ${currentId}`);
                     const result = await this.client.invoke(
                         new Api.channels.GetMessages({
                             channel,
@@ -81,11 +88,23 @@ class TelegramBotClient {
                         })
                     ) as MessagesResponse;
 
+                    console.log(`Result for message ${currentId}:`, result?.messages?.[0] ? 'Message found' : 'No message');
+
                     // Check if we got a valid message
-                    if (!result?.messages?.[0] || !result.messages[0].message) {
-                        // No more messages or empty message, stop the loop
-                        break;
+                    if (!result?.messages?.[0] || result.messages[0].className === "MessageEmpty") {
+                        console.log(`Empty message found at ID ${currentId}`);
+                        emptyMessageCount++;
+                        
+                        if (emptyMessageCount >= 5) {
+                            console.log(`Found 5 consecutive empty messages, stopping at ID ${currentId}`);
+                            break;
+                        }
+                        currentId++;
+                        continue;
                     }
+
+                    // Reset empty message counter when we find a valid message
+                    emptyMessageCount = 0;
 
                     // Add the message to our collection
                     messages.push(result.messages[0]);
@@ -104,6 +123,7 @@ class TelegramBotClient {
                 }
             }
 
+            console.log(`Total messages fetched: ${messages.length}`);
             return messages;
         } catch (error) {
             console.error('Failed to get messages from channel:', error);
