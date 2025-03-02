@@ -1,101 +1,136 @@
-# TgRssFeed
+# Telegram RSS Feed
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A simple and easy to deploy RSS feed for your Telegram channels built with GramJS and Express. This app allows you to distribute messages from your Telegram channels to RSS feeds.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+Then you can subscribe to the feed and distribute the messages to your audience on other platforms.
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/node?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## One-Click Deploy
 
-## Run tasks
+Deploy the app using [Vercel](https://vercel.com):
 
-To run the dev server for your app, use:
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/artabr/tg-rss-feed&project-name=tg-rss-feed&repository-name=tg-rss-feed)
 
-```sh
-npx nx serve tg-rss-feed
+Please deploy your own copy of the repository to your own Vercel account. It's free and easy to do.
+
+Do not use my Vercel deployment as it may go down at any time.
+
+## 🚀 Features
+
+- Creates RSS feeds from all messages in your Telegram channels
+- Easy deployment to Vercel
+
+## 📖 Usage
+
+### Available Routes
+
+- `/feed/<channel_name>`: Get RSS feed for a specific channel
+  - Example: `https://your-deployment.vercel.app/feed/mychannel`
+  - Replace `<channel_name>` with your Telegram channel's username (without the @ symbol)
+  - This URL can be added to any RSS reader to subscribe to the channel's updates
+
+
+- `/messages/<channel_name>`: Get a list of all messages from a specific channel
+  - Example: `https://your-deployment.vercel.app/messages/mychannel`
+  - Returns a JSON array of all messages with their IDs, content, and metadata
+  - Useful for browsing channel history or building custom integrations
+
+
+- `/messages/<channel_name>/<message_id>`: Get a specific message from a channel
+  - Example: `https://your-deployment.vercel.app/messages/mychannel/12345`
+  - Returns detailed information about a single message in JSON format
+  - Includes message content, media attachments, and metadata
+
+### Subscribing to Feeds
+
+1. Deploy your instance of the app following the deployment instructions below
+2. Get your channel's feed URL: `https://your-deployment.vercel.app/feed/<channel_name>`
+3. Add this URL to your favorite RSS reader (like [QuiteRSS](https://quiterss.org), Feedly, or any other RSS reader)
+4. Your RSS reader will now automatically fetch new posts from your Telegram channel
+
+### Example
+
+If your Telegram channel is [@feat_initial_commit](https://t.me/feat_initial_commit) and you've deployed to Vercel at `https://tg-rss-feed.vercel.app/`:
+- Your feed URL would be: [https://tg-rss-feed.vercel.app/feed/feat_initial_commit](https://tg-rss-feed.vercel.app/feed/feat_initial_commit)
+
+## 📋 Prerequisites
+
+- bun
+- Telegram account
+- Vercel account (for deployment)
+
+## 🔑 Environment Variables
+
+The following environment variables are required:
+
+```env
+# Telegram API Credentials
+BOT_TOKEN=your_bot_token_here
+API_ID=your_api_id_here
+API_HASH=your_api_hash_here
 ```
 
-To create a production bundle:
+### Getting Telegram Credentials
 
-```sh
-npx nx build tg-rss-feed
-```
+1. **API ID and Hash ID:**
+   - Visit [my.telegram.org](https://my.telegram.org)
+   - Log in with your phone number
+   - Go to 'API development tools'
+   - Create a new application
+   - Copy the `api_id` and `api_hash`
 
-To see all available targets to run for a project, run:
+2. **Bot Token:**
+   - Open Telegram and search for [@BotFather](https://t.me/botfather)
+   - Send `/newbot` command
+   - Follow the instructions to create your bot
+   - Copy the provided bot token
 
-```sh
-npx nx show project tg-rss-feed
-```
+## 💻 Development
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+This project uses NX for development. Here's how to get started:
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+1. **Install dependencies:**
+   ```bash
+   bun install
+   ```
 
-## Add new projects
+2. **Set up environment variables:**
+   - Copy `.env.example` to `.env`
+   - Fill in your Telegram credentials
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+3. **Start the development server:**
+   ```bash
+   bunx nx serve tg-rss-feed
+   ```
 
-Use the plugin's generator to create new projects.
+4. **Build for production:**
+   ```bash
+   bunx nx build tg-rss-feed
+   ```
 
-To generate a new application, use:
+## 🚀 Deployment
 
-```sh
-npx nx g @nx/node:app demo
-```
+### Vercel Deployment
 
-To generate a new library, use:
+1. Fork this repository
+2. Create a new project in Vercel
+3. Configure the following environment variables in Vercel's admin panel:
+   - Go to Project Settings > Environment Variables
+   - Add the following variables:
+     - `BOT_TOKEN`
+     - `API_ID`
+     - `API_HASH`
+4. Deploy using the "Deploy" button at the top of this README
 
-```sh
-npx nx g @nx/node:lib mylib
-```
+## 📚 Documentation
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+For more detailed information about the workspace setup and NX capabilities:
+- [NX Documentation](https://nx.dev)
+- [Telegram Bot API Documentation](https://core.telegram.org/bots/api)
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+## 🤝 Contributing
 
-## Set up CI!
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-### Step 1
+## 📝 License
 
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
-```
-
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
-
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
-```
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/nx-api/node?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

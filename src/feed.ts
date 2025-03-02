@@ -23,7 +23,6 @@ class RSSFeed {
 
             const date = new Date(message.date * 1000);
             const link = message.url || `https://t.me/${channelUsername}/${message.id}`;
-            console.log('link:', link);
 
             this.feed.addItem({
                 title: this.generateTitle(message.message),

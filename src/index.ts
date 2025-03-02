@@ -2,11 +2,18 @@ import express from 'express';
 import TelegramProcessManager from './telegram-process-manager';
 import RSSFeed from './feed';
 import * as dotenv from 'dotenv';
+import * as fs from 'fs';
+import * as path from 'path';
+import MarkdownIt from 'markdown-it';
 
 dotenv.config();
 
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
+const md = new MarkdownIt({
+    html: true,
+    linkify: true,
+});
 
 const app = express();
 
@@ -18,7 +25,49 @@ const startServer = async () => {
     try {
         await telegramManager.connect();
 
-        app.get('/:channel', async (req, res) => {
+        app.get('/', function (req, res) {
+            try {
+                const readmePath = path.join(__dirname, '..', 'README.md');
+                const readmeContent = fs.readFileSync(readmePath, 'utf-8');
+                const htmlContent = md.render(readmeContent);
+                res.send(`
+                    <!DOCTYPE html>
+                    <html>
+                        <head>
+                            <meta charset="utf-8">
+                            <title>TG RSS Feed</title>
+                            <style>
+                                body {
+                                    max-width: 800px;
+                                    margin: 0 auto;
+                                    padding: 20px;
+                                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                                    line-height: 1.6;
+                                    color: #333;
+                                }
+                                pre {
+                                    background-color: #f6f8fa;
+                                    padding: 16px;
+                                    border-radius: 6px;
+                                    overflow-x: auto;
+                                }
+                                code {
+                                    font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            ${htmlContent}
+                        </body>
+                    </html>
+                `);
+            } catch (error) {
+                console.error('Error reading README:', error);
+                res.status(500).send('Error loading documentation');
+            }
+        });
+
+        app.get('/messages/:channel', async (req, res) => {
             try {
                 const channelUsername = req.params.channel?.trim();
                 if (!channelUsername) {
@@ -71,10 +120,10 @@ const startServer = async () => {
             }
         });
 
-        app.get('/message/:messageId', async (req, res) => {
+        app.get('/messages/:channel/:messageId', async (req, res) => {
             try {
                 const messageId = Number(req.params.messageId);
-                const channelUsername = req.query.channel as string;
+                const channelUsername = req.params.channel?.trim();
 
                 if (!channelUsername) {
                     return res.status(400).json({ error: 'Channel username is required' });
