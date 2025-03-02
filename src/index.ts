@@ -30,7 +30,7 @@ const startServer = async () => {
                 const readmePath = path.join(__dirname, '..', 'README.md');
                 const readmeContent = fs.readFileSync(readmePath, 'utf-8');
                 const htmlContent = md.render(readmeContent);
-                res.send(`
+                res.status(200).send(`
                     <!DOCTYPE html>
                     <html>
                         <head>
