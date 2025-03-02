@@ -56,6 +56,22 @@ class TelegramBotClient {
         }
     }
 
+    public async getMessageById(channelUsername: string, messageId: number) {
+        try {
+            const channel = await this.client.getEntity(channelUsername);
+            const messages = await this.client.invoke(
+                new Api.channels.GetMessages({
+                    channel,
+                    id: [new Api.InputMessageID({ id: messageId })],
+                })
+            );
+            return messages;
+        } catch (error) {
+            console.error('Failed to get message by ID:', error);
+            throw error;
+        }
+    }
+
     public getClient(): TelegramClient {
         return this.client;
     }

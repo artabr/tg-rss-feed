@@ -33,6 +33,31 @@ const startServer = async () => {
             }
         });
 
+        app.get('/message/:messageId', async (req, res) => {
+            try {
+                const messageId = Number(req.params.messageId);
+                const channelUsername = req.query.channel as string;
+
+                if (!channelUsername) {
+                    return res.status(400).json({ error: 'Channel username is required' });
+                }
+
+                if (isNaN(messageId)) {
+                    return res.status(400).json({ error: 'Invalid message ID' });
+                }
+
+                const message = await telegramClient.getMessageById(channelUsername, messageId);
+                if (!message) {
+                    return res.status(404).json({ error: 'Message not found' });
+                }
+
+                res.json({ message });
+            } catch (error) {
+                console.error('Error fetching message:', error);
+                res.status(500).json({ error: 'Failed to fetch message' });
+            }
+        });
+
         app.listen(port, host, () => {
             console.log(`[ ready ] http://${host}:${port}`);
         });
