@@ -36,6 +36,18 @@ const startServer = async () => {
 
 startServer();
 
+app.get('/api/test-api-route', function (req, res) {
+  res.status(200).send('Hello World!/api/test-api-route');
+});
+
+app.get('/test-route', function (req, res) {
+  res.status(200).send('Hello World!/test-route');
+});
+
+app.listen(port, host, () => {
+  console.log(`[ ready ] http://${host}:${port}`);
+});
+
 /**
  * This exposes the Express application as a serverless function handler for Vercel deployment
  *
