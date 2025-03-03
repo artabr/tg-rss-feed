@@ -14,7 +14,7 @@ export const bootstrapServer = (app: Express, telegramClient: TelegramBotClient)
   try {
     app.get('/', function (req, res) {
       try {
-        const readmePath = path.join(__dirname, '..', 'README.md');
+        const readmePath = path.join(__dirname, 'README.md');
         const readmeContent = fs.readFileSync(readmePath, 'utf-8');
         const htmlContent = md.render(readmeContent);
         res.status(200).send(`
