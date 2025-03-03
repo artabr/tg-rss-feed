@@ -24,6 +24,10 @@ app.get('/test-route', function (req, res) {
   res.status(200).send('Hello World!/test-route');
 });
 
+app.get('*',function (req, res) {
+  res.redirect('/');
+});
+
 app.listen(port, host, () => {
   console.log(`[ ready ] http://${host}:${port}`);
 });
