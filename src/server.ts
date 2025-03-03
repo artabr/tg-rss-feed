@@ -10,6 +10,15 @@ const md = new MarkdownIt({
   linkify: true,
 });
 
+// Connect to Telegram before making a request
+const telegramClientConnect = async (telegramClient: TelegramBotClient) => {
+  try {
+    await telegramClient.connect();
+  } catch (error) {
+    console.error('Failed to connect to Telegram:', error);
+  }
+};
+
 export const bootstrapServer = (app: Express, telegramClient: TelegramBotClient) => {
   try {
     app.get('/', function (req, res) {
@@ -55,6 +64,8 @@ export const bootstrapServer = (app: Express, telegramClient: TelegramBotClient)
     });
 
     app.get('/messages/:channel', async (req, res) => {
+      await telegramClientConnect(telegramClient);
+
       try {
         const channelUsername = req.params.channel?.trim();
         if (!channelUsername) {
@@ -70,6 +81,8 @@ export const bootstrapServer = (app: Express, telegramClient: TelegramBotClient)
     });
 
     app.get('/feed/:channel', async (req, res) => {
+      await telegramClientConnect(telegramClient);
+
       try {
         const channelUsername = req.params.channel?.trim();
         const format = (req.query.format || 'rss') as string;
@@ -108,6 +121,8 @@ export const bootstrapServer = (app: Express, telegramClient: TelegramBotClient)
     });
 
     app.get('/messages/:channel/:messageId', async (req, res) => {
+      await telegramClientConnect(telegramClient);
+
       try {
         const messageId = Number(req.params.messageId);
         const channelUsername = req.params.channel?.trim();
