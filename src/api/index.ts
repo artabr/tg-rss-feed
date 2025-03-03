@@ -5,31 +5,15 @@ import { bootstrapServer } from '../server';
 
 dotenv.config();
 
-const host = process.env.HOST ?? 'localhost';
-const port = process.env.PORT ? Number(process.env.PORT) : 3000;
-
 const app = express();
-
-app.use((req, res, next) => {
-  console.log(req);
-  next();
-});
 
 // Initialize Telegram client
 const telegramClient = TelegramBotClient.getInstance();
 
 bootstrapServer(app, telegramClient);
 
-app.get('/test-route', function (req, res) {
-  res.status(200).send('Hello World!/test-route');
-});
-
 app.get('*',function (req, res) {
   res.redirect('/');
-});
-
-app.listen(port, host, () => {
-  console.log(`[ ready ] http://${host}:${port}`);
 });
 
 /**
