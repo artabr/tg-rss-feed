@@ -33,15 +33,15 @@ app.listen(port, host, () => {
 });
 
 // Connect to Telegram before starting the server
-const telegramClientConnect = async () => {
-  try {
-    await telegramClient.connect();
-  } catch (error) {
-    console.error('Failed to connect to Telegram:', error);
-  }
-};
-
-telegramClientConnect();
+// const telegramClientConnect = async () => {
+//   try {
+//     await telegramClient.connect();
+//   } catch (error) {
+//     console.error('Failed to connect to Telegram:', error);
+//   }
+// };
+//
+// telegramClientConnect();
 
 /**
  * This exposes the Express application as a serverless function handler for Vercel deployment
