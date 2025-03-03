@@ -5,6 +5,9 @@ import { bootstrapServer } from '../server';
 
 dotenv.config();
 
+const host = process.env.HOST ?? 'localhost';
+const port = process.env.PORT ? Number(process.env.PORT) : 3000;
+
 const app = express();
 
 // Initialize Telegram client
@@ -16,6 +19,10 @@ const startServer = async () => {
     await telegramClient.connect();
 
     bootstrapServer(app, telegramClient);
+
+    app.listen(port, host, () => {
+      console.log(`[ ready ] http://${host}:${port}`);
+    });
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);
