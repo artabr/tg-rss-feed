@@ -10,6 +10,11 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 const app = express();
 
+app.use((req, res, next) => {
+  console.log(req);
+  next();
+});
+
 // Initialize Telegram client
 const telegramClient = TelegramBotClient.getInstance();
 
