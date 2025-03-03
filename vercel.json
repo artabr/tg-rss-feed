@@ -3,7 +3,8 @@
 	"rewrites": [{ "source": "/(.*)", "destination": "/api" }],
 	"functions": {
 		"api/index.ts": {
-			"includeFiles": "README.md"
+			"includeFiles": "README.md",
+			"maxDuration": 60
 		}
 	}
 }
