@@ -15,7 +15,7 @@
         "outputPath": "dist/tg-rss-feed",
         "format": ["cjs"],
         "bundle": false,
-        "main": "src/index.ts",
+        "main": "src/main.ts",
         "tsConfig": "tsconfig.app.json",
         "assets": ["src/assets", "README.md"],
         "generatePackageJson": true,

@@ -1,4 +1,10 @@
 {
 	"version": 2,
-	"rewrites": [{ "source": "/(.*)", "destination": "/dist" }]
+	"rewrites": [{ "source": "/(.*)", "destination": "/api" }],
+	"functions": {
+		"api/index.ts": {
+			"includeFiles": "README.md",
+			"maxDuration": 60
+		}
+	}
 }

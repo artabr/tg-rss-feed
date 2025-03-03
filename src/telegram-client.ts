@@ -19,6 +19,7 @@ class TelegramBotClient {
     private readonly CACHE_TTL = 8 * 60 * 60; // 8 hours in seconds
     private readonly MESSAGES_CACHE_KEY = 'channel_messages';
     private readonly LAST_MESSAGE_ID_KEY = 'last_message_id';
+    private isConnected = false;
 
     private constructor() {
         if (!process.env.BOT_TOKEN) {
@@ -47,15 +48,26 @@ class TelegramBotClient {
     }
 
     public async connect(): Promise<void> {
+        if (this.isConnected) {
+            console.log('Telegram bot client is already connected');
+            return;
+        }
+
         try {
             await this.client.start({
                 botAuthToken: process.env.BOT_TOKEN!
             });
+            this.isConnected = true;
             console.log('Telegram bot client connected successfully');
         } catch (error) {
             console.error('Failed to connect Telegram bot client:', error);
+            this.isConnected = false;
             throw error;
         }
+    }
+
+    public isClientConnected(): boolean {
+        return this.isConnected;
     }
 
     public async getMessagesFromChannel(channelUsername: string) {
@@ -63,16 +75,16 @@ class TelegramBotClient {
             console.log(`Attempting to fetch messages for channel: ${channelUsername}`);
             const channel = await this.client.getEntity(channelUsername);
             console.log('Successfully got channel entity:', channel);
-            
+
             const cacheKey = `${this.MESSAGES_CACHE_KEY}_${channelUsername}`;
             const lastMessageIdKey = `${this.LAST_MESSAGE_ID_KEY}_${channelUsername}`;
-            
+
             // Get cached messages if they exist
             let messages = this.cache.get(cacheKey) as TelegramMessage[] || [];
             let lastProcessedId = this.cache.get(lastMessageIdKey) as number || 1;
-            
+
             console.log(`Starting message fetch from ID: ${lastProcessedId + 1}`);
-            
+
             // Start from the next message after the last processed one
             let currentId = lastProcessedId + 1;
             const maxId = 1000000;
@@ -94,7 +106,7 @@ class TelegramBotClient {
                     if (!result?.messages?.[0] || result.messages[0].className === "MessageEmpty") {
                         console.log(`Empty message found at ID ${currentId}`);
                         emptyMessageCount++;
-                        
+
                         if (emptyMessageCount >= 5) {
                             console.log(`Found 5 consecutive empty messages, stopping at ID ${currentId}`);
                             break;
